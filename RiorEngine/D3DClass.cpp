@@ -22,6 +22,18 @@ D3DClass::~D3DClass()
 
 bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hwnd, bool fullscreen, float screenDepth, float screenNear)
 {
+	// Process 
+	// 1. Get Numerator / Denominator of adapter output 
+	// 2. Set Swap chain, D3Device, D3DeviceContext 
+	// 3. Set Render Target view with using the ptr of back buffer > In my opinion by doing that, render target view sets the render target frame as the back buffer we derived from the pointer.
+	// Render target contains resources for rendering i.d bitmaps, etc. Plus it has draw methods with which it can render sth.
+	// 4. Set Depth Buffer
+	// 5. Set Depth Stencil State
+	// 6. Set Depth Stencil View
+	// 7. Set Rasterizer State 
+	// 8. Set the viewport for rendering.
+	// 9. Set proj, world, ortho matrix 
+
 	HRESULT result;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
@@ -44,20 +56,20 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	m_vsync_enabled = vsync;
 
 	// Create a DirectX graphics interface factory.
-	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+	result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory); // IDXGI FActory interface implments methods for generating DXGI objects(which handle full screen transitions).
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Use the factory to create an adapter for the primary graphics interface(video card)
-	result = factory->EnumAdapters(0, &adapter);
+	result = factory->EnumAdapters(0, &adapter); // Enumerate adapter(video cards) outputs
 	if (FAILED(result))
 	{
 		return false;
 	}
 
-	// Enumerate the primary adapter output(monitor)
+	// Enumerate the primary adapter output(such as a monitor)
 	result = adapter->EnumOutputs(0, &adapterOutput);
 	if (FAILED(result))
 	{
@@ -65,7 +77,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	}
 
 	// Get the number of modes that fit the DXGI_FORMAT_R8G8B8A8_UNORM display format for the adapter output (monitor).
-	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL);
+	result = adapterOutput->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_INTERLACED, &numModes, NULL); // FORMAT R8G8B8A8 UNORM: 4 components 32bits unsigned normalized int format
 	if (FAILED(result))
 	{
 		return false;
@@ -99,7 +111,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	{
 		return false;
 	}
-
+	
 	// Store the dedicated video card memory in megabytes.
 	m_videoCardMemory = (int)(adapterDesc.DedicatedVideoMemory / 1024 / 1024);
 
@@ -133,7 +145,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDesc.BufferCount = 1;
 
 	// Set the width and height of the back buffer
-	swapChainDesc.BufferDesc.Width = screenWidth;
+	swapChainDesc.BufferDesc.Width = screenWidth; // Description for back buffer
 	swapChainDesc.BufferDesc.Height = screenHeight;
 
 	// Set regular 32-bit surface for the back buffer
@@ -158,8 +170,8 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDesc.OutputWindow = hwnd;
 
 	// Turn multisampling off.
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.SampleDesc.Count = 1; // 1 Means disable multisampling 
+	swapChainDesc.SampleDesc.Quality = 0; // 0 means disable multisampling 
 
 	// Set to full screen or windowed mode.
 	if (fullscreen)
@@ -190,6 +202,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	{
 		return false;
 	}
+	// Device, Device context: Important, Interface to all of the d3d functions. Will use the device and device context for almost everything from this point forward.
 
 	// Get the pointer to the back buffer.
 	result = m_swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferPtr);
@@ -221,7 +234,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	depthBufferDesc.SampleDesc.Count = 1;
 	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL; // Flags for binding to pipeline stages.
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
 
@@ -257,17 +270,24 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 
 	// Create the depth stencil state.
-	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
+	result = m_device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);	// The depth-stencil state tells the output-merger stage how to perform the depth-stencil test. 
+																							// The depth-stencil test determines whether or not a given pixel should be drawn.
 	if (FAILED(result))
 	{
 		return false;
 	}
 
 	// Set the depth stencil state.
-	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1);
+	m_deviceContext->OMSetDepthStencilState(m_depthStencilState, 1); // OM: Output-merger stage
+
+	// Reference: https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d10-graphics-programming-guide-output-merger-stage
 
 	// Initialize the depth stencil view.
 	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+
+	// D3D11 Separates the concepts of resources and views. 
+	// Reference: https://stackoverflow.com/questions/20106440/what-is-a-depth-stencil-view
+	// Both Render target view and Depth stencil view will be set by the method OMSetRenderTargets() in DeviceContext.
 
 	// Set up the depth stencil view description.
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -276,6 +296,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	// Create the depth stencil view
 	result = m_device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
+	// As you can see, D3D11 separates resource(depth stencil buffer, which is Texture2D) and view(depth stencil view)
 	if (FAILED(result))
 	{
 		return false;
@@ -405,7 +426,6 @@ void D3DClass::BeginScene(float red, float green, float blue, float alpha)
 
 	// Clear the back buffer.
 	m_deviceContext->ClearRenderTargetView(m_renderTargetView, color);
-
 	// Clear the depth buffer.
 	m_deviceContext->ClearDepthStencilView(m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 

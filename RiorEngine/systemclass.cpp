@@ -29,13 +29,12 @@ bool SystemClass::Initialize()
 	// Initialize the windows api.
 	InitializeWindows(screenWidth, screenHeight);
 
-	// Create and initialize the input object.  This object will be used to handle reading the keyboard input from the user.
+	// Create and initialize the input object. This object will be used to handle reading the keyboard input from the user.
 	m_Input = new InputClass;
 	m_Input->Initialize();
 
 	// Create and initialize the application class object.  This object will handle rendering all the graphics for this application.
 	m_Application = new ApplicationClass;
-
 	result = m_Application->Initialize(screenWidth, screenHeight, m_hwnd);
 	if (!result)
 	{

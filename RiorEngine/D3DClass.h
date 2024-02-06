@@ -18,7 +18,6 @@
 //////////////
 #include <d3d11.h>
 #include <DirectXMath.h>
-//#include <directxmath.h>
 using namespace DirectX;
 
 class D3DClass
