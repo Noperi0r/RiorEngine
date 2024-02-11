@@ -1,7 +1,5 @@
-/////////////
-// GLOBALS //
-/////////////
 
+// Global variable
 cbuffer MatrixBuffer
 {
 	matrix worldMatrix;
@@ -9,9 +7,8 @@ cbuffer MatrixBuffer
 	matrix projectionMatrix;
 };
 
-//////////////
-// TYPEDEFS //
-//////////////
+
+// Typedefs 
 struct VertexInputType
 {
 	float4 position : POSITION;
@@ -24,9 +21,7 @@ struct PixelInputType
 	float4 color : COLOR;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-// Vertex Shader
-///////////////////////////////////////////////////////////////////////////////
+// Vertex Shader: Shader entry point function where shader execution begins.
 PixelInputType ColorVertexShader(VertexInputType input)
 {
 	PixelInputType output;

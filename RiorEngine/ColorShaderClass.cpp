@@ -39,8 +39,8 @@ bool ColorShaderClass::Initialize(ID3D11Device* device, HWND hwnd)
 
 	// Initialize the vertex and pixel shaders.
 	result = InitializeShader(device, hwnd, vsFilename, psFilename);
-	
 	if (!result) return false;
+	
 	return true;
 }
 
@@ -50,13 +50,13 @@ void ColorShaderClass::Shutdown()
 	// Shutdown the vertex and pixel shaders as well as the related objects.
 	ShutdownShader();
 	return;
-}
+} 
 
 bool ColorShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix)
 {
 	bool result;
 	
-	// Set the shader parameters that it will use for rendering.
+	// Refresh the shader parameters that it will use for rendering.
 	result = SetShaderParameters(deviceContext, worldMatrix, viewMatrix, projectionMatrix);
 	if (!result) return false;
 
@@ -70,7 +70,7 @@ bool ColorShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 {
 	HRESULT result;
 	ID3D10Blob* errorMessage;
-	ID3D10Blob* vertexShaderBuffer;
+	ID3D10Blob* vertexShaderBuffer; // Interface that you can use to access compiler error messages.
 	ID3D10Blob* pixelShaderBuffer;
 	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
 	unsigned int numElements;
@@ -125,7 +125,7 @@ bool ColorShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* 
 	result = device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &m_pixelShader);
 	if (FAILED(result)) return false;
 
-	// Create the vertex input layout description
+	// Create the vertex input layout description >> See vertex shader hlsl file
 	// This setup needs to match the VertexType Structure in the ModelClass and in the shader.
 
 	// Input-layout object encapsulates the input state of the IA(Input-Assembler) stage. This includes a description of the input data that is bound to the IA stage.
@@ -254,7 +254,7 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
 
-	// Lock the constant buffer so it can be written to.
+	// Lock the Dynamic constant buffer so it can be written to.
 	result = deviceContext->Map(m_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) return false;
 
@@ -272,7 +272,7 @@ bool ColorShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, X
 	// Set the position of the constant buffer in the vertex shader.
 	bufferNumber = 0;
 
-	// Finanly set the constant buffer in the vertex shader with the updated values.
+	// Finally set the constant buffer in the vertex shader with the updated values.
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	
 	return true;

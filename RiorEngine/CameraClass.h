@@ -11,14 +11,14 @@ public:
 	CameraClass(const CameraClass&);
 	~CameraClass();
 
-	void SetPostition(float, float, float);
-	void SetRotation(float, float, float);
+	void SetPostition(float x, float y, float z);
+	void SetRotation(float x, float y, float z);
 
 	XMFLOAT3 GetPostition();
 	XMFLOAT3 GetRotation();
 
 	void Render();
-	void GetViewMatrix(XMMATRIX&);
+	void GetViewMatrix(XMMATRIX& viewMatrix);
 
 private:
 	float m_positionX, m_positionY, m_positionZ;

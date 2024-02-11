@@ -16,15 +16,8 @@ ModelClass::~ModelClass()
 
 bool ModelClass::Initialize(ID3D11Device* device)
 {
-	//bool result;
-
 	// Initialize the vertex and index buffers.
 	return InitializeBuffers(device);
-	
-	//result = InitializeBuffers(device);
-	//if (!result) return false;
-
-	//return false;
 }
 
 void ModelClass::Shutdown()
@@ -77,13 +70,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	
 	// Load the vertex array with data
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // Bottom Left
-	vertices[0].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[0].color = XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 
 	vertices[1].position = XMFLOAT3(0.0f, 1.0f, 0.0f); // Top middle
 	vertices[1].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // Bottom right
-	vertices[2].color = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[2].color = XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 	// Load the index array with data
 	indices[0] = 0; // Bottom Left
@@ -99,6 +92,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	vertexBufferDesc.StructureByteStride = 0;
 
 	// Give the subresource structure a pointer to the vertex data.
+	// Subresource: A subset of a resource.
 	vertexData.pSysMem = vertices;
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;

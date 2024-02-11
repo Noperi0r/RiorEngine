@@ -25,16 +25,16 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*);
+	bool Initialize(ID3D11Device* device);
 	void Shutdown();
-	void Render(ID3D11DeviceContext*);
+	void Render(ID3D11DeviceContext* deviceContext);
 
 	int GetIndexCount();
 
 private:
-	bool InitializeBuffers(ID3D11Device*);
+	bool InitializeBuffers(ID3D11Device* device);
 	void ShutdownBuffers();
-	void RenderBuffers(ID3D11DeviceContext*);
+	void RenderBuffers(ID3D11DeviceContext* deviceContext);
 
 private:
 	ID3D11Buffer* m_vertexBuffer, * m_indexBuffer; // DX11 Buffers generally use the genereic ID3D11Buffer Type, and more clearly identified by a buffer description when first created.
