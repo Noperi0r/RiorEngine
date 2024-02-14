@@ -32,12 +32,14 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
 		return false;
 	}
-
+	
+	// Initialize Camera
 	m_Camera = new CameraClass;
 	m_Camera->SetPostition(0.0f, 0.0f, -5.0f);
 
+	// Initialize Model
 	m_Model = new ModelClass;
-	strcpy_s(textureFilename, "../RiorEngine/Data/stone01.tga");
+	strcpy_s(textureFilename, "../RiorEngine/Data/stone02.tga");
 	result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), textureFilename);
 	if (!result)
 	{
@@ -45,6 +47,7 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	// Initialize Shader program 
 	m_textureShader = new TextureShaderClass;
 	result = m_textureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
 	if (!result)

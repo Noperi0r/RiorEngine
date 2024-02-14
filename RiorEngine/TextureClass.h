@@ -30,13 +30,14 @@ public:
 	int GetHeight();
 
 private:
-	bool LoadTarga32Bit(char*); // Targa reading function
+	bool LoadTargaBit(char* filename); // Targa reading function
 
 private:
 	unsigned char* m_targaData; // Hold the raw Targa data read stright in from the file
 	ID3D11Texture2D* m_texture; // Strucured texture data that DirectX will use for rendering
 	ID3D11ShaderResourceView* m_textureView; // Shader uses it to access the texture data when drawing
 	int m_width, m_height; // Dimensions of the texture
+	int m_bpp;
 };
 
 #endif 

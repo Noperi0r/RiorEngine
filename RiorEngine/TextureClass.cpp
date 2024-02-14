@@ -25,7 +25,7 @@ bool TextureClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 	CD3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 
 	// Load the targa image data into memory.
-	result = LoadTarga32Bit(filename); // Get m_targadata as a result
+	result = LoadTargaBit(filename); // Get m_targadata as a result
 	if (!result) return false;
 
 	// Setup the description of the texture.
@@ -46,7 +46,7 @@ bool TextureClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceC
 	if (FAILED(hResult)) return false;
 
 	// Set the row pitch of the targa image data.
-	rowPitch = (m_width * 4) * sizeof(unsigned char);
+	rowPitch = (m_width * (m_bpp / 8)) * sizeof(unsigned char);
 
 	// UpdateSubresource is should be used for something that will be loaded once or that gets loaded rarely during loading sequences unlike map/unmap 
 	// It puts the data into higher speed memory that gets cache retention preference since it knows you aren't going to remove or reload it anytime soon ??
@@ -113,13 +113,14 @@ int TextureClass::GetHeight()
 	return m_height;
 }
 
-bool TextureClass::LoadTarga32Bit(char* filename)
+bool TextureClass::LoadTargaBit(char* filename)
 {
-	int error, bpp, imageSize, index, i, j, k;
+	int error, imageSize, index, i, j, k;
 	FILE* filePtr;
 	unsigned int count;
 	TargaHeader targaFileHeader;
 	unsigned char* targaImage;
+	int stepSize;
 
 	// Open the targa file for reading in binary.
 	error = fopen_s(&filePtr, filename, "rb");
@@ -132,12 +133,27 @@ bool TextureClass::LoadTarga32Bit(char* filename)
 	// Get the important information from the header.
 	m_height = (int)targaFileHeader.height;
 	m_width = (int)targaFileHeader.width;
-	bpp = (int)targaFileHeader.bpp;
+	m_bpp = (int)targaFileHeader.bpp;
 
-	if (bpp != 32) return false;
+	if (m_bpp == 32)
+	{
+		imageSize = m_width * m_height * 4; // 4 bytes per pixel(RGBA)
+		k = (m_width * m_height * 4) - (m_width * 4); // Note that targa file is inverse ordered
+		stepSize = 4;
+	}
+	else if (m_bpp == 24)
+	{
+		imageSize = m_width * m_height * 3; // 3 bytes per pixel(RGB)
+		k = (m_width * m_height * 3) - (m_width * 3);
+		stepSize = 3;
+	}
+	else
+	{
+		return false;
+	}
 
 	// Calculate the size of the 32 bit image data.
-	imageSize = m_width * m_height * 4; // 4 bytes per pixel
+	//imageSize = m_width * m_height * 4; // 4 bytes per pixel
 
 	targaImage = new unsigned char[imageSize];
 
@@ -151,7 +167,7 @@ bool TextureClass::LoadTarga32Bit(char* filename)
 	m_targaData = new unsigned char[imageSize]; // Organized data array of targaImage
 
 	index = 0;
-	k = (m_width * m_height * 4) - (m_width * 4); // Note that targa file is inverse ordered
+	//k = (m_width * m_height * 4) - (m_width * 4); // Note that targa file is inverse ordered
 	// Now copy the targa image data into the targa destination array in the correct order since the targa format is stored upside down and also is not in RGBA order.
 	for (j = 0; j < m_height; ++j)
 	{
@@ -160,14 +176,15 @@ bool TextureClass::LoadTarga32Bit(char* filename)
 			m_targaData[index + 0] = targaImage[k + 2]; // Red
 			m_targaData[index + 1] = targaImage[k + 1]; // Green
 			m_targaData[index + 2] = targaImage[k + 0]; // Blue
-			m_targaData[index + 3] = targaImage[k + 3]; // Alpha
+			if(m_bpp == 32)
+				m_targaData[index + 3] = targaImage[k + 3]; // Alpha
 		
 			// Increment the indexes into the targa data
-			k += 4;
-			index += 4;
+			k += stepSize;
+			index += stepSize;
 		}
 		// Set the targa image data index back to the preceding row at the beginning of the column since its reading it in upside down.
-		k -= (m_width * 8);
+		k -= (m_width * (stepSize * 2));
 	}
 
 	delete[] targaImage;

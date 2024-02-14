@@ -157,9 +157,9 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR
 	result = device->CreateBuffer(&matrixBufferDesc, NULL, &m_matrixBuffer);
 	if (FAILED(result)) return false;
 
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Filter that tells the sampler to use linear interpolation for minification, magnification, mip-level sampling. Most expensive in terms of processing but gives the best visual result.
-	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP; // Any value outside of 0~1f will be placed between the area.
-	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR; // Filter that tells the sampler to use linear interpolation for minification, magnification, mip-level sampling.
+	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP; // Any value outside of 0~1f will be placed between the area. Wrap means repeat the textures outside of 0~1
+	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP; 
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP; 
 	samplerDesc.MipLODBias = 0.0f;
 	samplerDesc.MaxAnisotropy = 1;
