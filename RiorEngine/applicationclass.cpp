@@ -5,7 +5,7 @@ ApplicationClass::ApplicationClass()
 	m_Direct3D = 0;
 	m_Camera = 0;
 	m_Model = 0;
-	m_ColorShader = 0;
+	m_textureShader = 0;
 }
 
 
@@ -21,6 +21,7 @@ ApplicationClass::~ApplicationClass()
 
 bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
+	char textureFilename[128];
 	bool result;
 
 	// Create and initialize the Direct3D object.
@@ -36,18 +37,19 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	m_Camera->SetPostition(0.0f, 0.0f, -5.0f);
 
 	m_Model = new ModelClass;
-	result = m_Model->Initialize(m_Direct3D->GetDevice());
+	strcpy_s(textureFilename, "../RiorEngine/Data/stone01.tga");
+	result = m_Model->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), textureFilename);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
 		return false;
 	}
 
-	m_ColorShader = new ColorShaderClass;
-	result = m_ColorShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+	m_textureShader = new TextureShaderClass;
+	result = m_textureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
 	if (!result)
 	{
-		MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize the texture shader object.", L"Error", MB_OK);
 		return false;
 	}
 
@@ -57,11 +59,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void ApplicationClass::Shutdown()
 {
-	if (m_ColorShader)
+	if (m_textureShader)
 	{
-		m_ColorShader->Shutdown();
-		delete m_ColorShader;
-		m_ColorShader = 0;
+		m_textureShader->Shutdown();
+		delete m_textureShader;
+		m_textureShader = 0;
 	}
 
 	if (m_Model)
@@ -104,7 +106,7 @@ bool ApplicationClass::Render()
 	// Clear the buffers to begin the scene
 	m_Direct3D->BeginScene(0.0f, 0.0f, 0.0f, 1.0f);
 
-	// Generate the view matrix based on the camera's position.
+	// Refresh the view matrix based on the camera's position.
 	m_Camera->Render();
 
 	// Get the world, view, and projection matrices from the camera and d3d objects.
@@ -115,8 +117,8 @@ bool ApplicationClass::Render()
 	// Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
-	// Render the model using the color shader.
-	result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatirx);
+	// Render the model using the texture shader.
+	result = m_textureShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatirx, m_Model->GetTexture());
 	if (!result) return false;
 
 	// Present the rendered scene to the screen
