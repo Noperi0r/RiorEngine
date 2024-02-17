@@ -89,15 +89,19 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	// Load the vertex array with data
 	vertices[0].position = XMFLOAT3(-1.0f, -1.0f, 0.0f); // Bottom Left
 	vertices[0].texture = XMFLOAT2(0.0f, 1.0f);
+	vertices[0].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[1].position = XMFLOAT3(-1.0f, 1.0f, 0.0f); // Top middle
 	vertices[1].texture = XMFLOAT2(0.0f, 0.0f);
+	vertices[1].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[2].position = XMFLOAT3(1.0f, -1.0f, 0.0f); // Bottom right
 	vertices[2].texture = XMFLOAT2(1.0f, 1.0f);
+	vertices[2].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	vertices[3].position = XMFLOAT3(1.0f, 1.0f, 0.0f);
 	vertices[3].texture = XMFLOAT2(1.0f, 0.0f);
+	vertices[3].normal = XMFLOAT3(0.0f, 0.0f, -1.0f);
 
 	// Load the index array with data
 	indices[0] = 0; // Bottom Left
@@ -106,7 +110,6 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indices[3] = 1; 
 	indices[4] = 3; 
 	indices[5] = 2; 
-
 
 	// Set up the description of the static vertex buffer.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT; 
