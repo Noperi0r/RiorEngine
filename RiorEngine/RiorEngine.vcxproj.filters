@@ -113,7 +113,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Cube.txt">
+    <Text Include="Data\Cube.txt">
       <Filter>Resource Files</Filter>
     </Text>
   </ItemGroup>
