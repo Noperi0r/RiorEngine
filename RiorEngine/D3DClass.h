@@ -1,21 +1,13 @@
 #pragma once
 
-////////////////////////////////////////////////////////////////////////////////
-// Filename: d3dclass.h
-////////////////////////////////////////////////////////////////////////////////
 #ifndef _D3DCLASS_H_
 #define _D3DCLASS_H_
 
-/////////////
-// LINKING //
-/////////////
+// Linking
 #pragma comment(lib, "d3d11.lib") // Contains all the direct3d functionality for setting up and drawing 3d graphics in DirectX 11
 #pragma comment(lib, "dxgi.lib") // Contains tools to interface with the hardware on the computer to obtain information about the refresh rate of the monitor, the video card being used, and so forth.
 #pragma comment(lib, "d3dcompiler.lib") // Contains functionality for compiling shaders which we will cover in the next tutorial.
 
-//////////////
-// INCLUDES //
-//////////////
 #include <d3d11.h>
 #include <DirectXMath.h>
 using namespace DirectX;

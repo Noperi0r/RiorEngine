@@ -51,7 +51,8 @@ private:
 	bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext, char* filename);
 	void ReleaseTexture();
 
-	bool LoadModel(char* modelFilename);
+	bool LoadCustomModel(char* modelFilename);
+	bool LoadObjModel(char* modelFilename);
 	void ReleaseModel();
 
 private:

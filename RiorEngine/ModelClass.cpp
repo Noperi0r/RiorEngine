@@ -21,7 +21,7 @@ bool ModelClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCon
 	bool result;
 	
 	// Load model first since buffer data relies on it
-	result = LoadModel(modelFilename);
+	result = LoadCustomModel(modelFilename);
 	if (!result) return false;
 
 	// Initialize the vertex and index buffers.
@@ -207,7 +207,7 @@ void ModelClass::ReleaseTexture()
 	return;
 }
 
-bool ModelClass::LoadModel(char* modelFilename)
+bool ModelClass::LoadCustomModel(char* modelFilename)
 {
 	std::ifstream fin;
 	char input;
@@ -246,6 +246,13 @@ bool ModelClass::LoadModel(char* modelFilename)
 	}
 
 	fin.close();
+
+	return true;
+}
+
+bool ModelClass::LoadObjModel(char* modelFilename)
+{
+	// f 0/0/0 order -> vertex / uv / normal
 
 	return true;
 }

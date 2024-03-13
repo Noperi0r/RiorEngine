@@ -63,9 +63,11 @@ bool ApplicationClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	// Initialize light object
 	m_Light = new LightClass;
+	m_Light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
-
+	m_Light->SetDirection(1.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(32.0f);
 
 	return true;
 }
@@ -133,7 +135,7 @@ bool ApplicationClass::Frame()
 
 bool ApplicationClass::Render(float rotation)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatirx, rotateMatrix, translateMatrix, scaleMatrix, srMatrix;
+	XMMATRIX worldMatrix, viewMatrix, projectionMatrix, rotateMatrix, translateMatrix, scaleMatrix, srMatrix;
 	bool result;
 
 	// Clear the buffers to begin the scene
@@ -145,7 +147,7 @@ bool ApplicationClass::Render(float rotation)
 	// Get the world, view, and projection matrices from the camera and d3d objects.
 	m_Direct3D->GetWorldMatrix(worldMatrix);
 	m_Camera->GetViewMatrix(viewMatrix);
-	m_Direct3D->GetProjectionMatrix(projectionMatirx);
+	m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
 	rotateMatrix = XMMatrixRotationY(rotation);
 	translateMatrix = XMMatrixTranslation(-2.0f, 0.0f, 0.0f); 
@@ -156,8 +158,9 @@ bool ApplicationClass::Render(float rotation)
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
 	// Render the model using the shader.
-	result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatirx, 
-									m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+	result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, 
+									m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+									m_Camera->GetPostition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 	if (!result) return false;
 
 	// Second cube
@@ -172,8 +175,9 @@ bool ApplicationClass::Render(float rotation)
 	m_Model->Render(m_Direct3D->GetDeviceContext());
 
 	// Render the model using the shader.
-	result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatirx,
-									m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+	result = m_LightShader->Render(m_Direct3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix,
+									m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetAmbientColor(), m_Light->GetDiffuseColor(),
+									m_Camera->GetPostition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 	if (!result) return false;
 
 	// Present the rendered scene to the screen
